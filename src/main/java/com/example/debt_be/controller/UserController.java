@@ -2,6 +2,7 @@ package com.example.debt_be.controller;
 
 import com.example.debt_be.entity.dto.IdDTO;
 import com.example.debt_be.entity.dto.ResponseDto;
+import com.example.debt_be.entity.model.Debt;
 import com.example.debt_be.entity.model.UserModel;
 import com.example.debt_be.repository.UserRepo;
 import com.example.debt_be.service.UserService;
@@ -30,7 +31,10 @@ public class UserController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<ResponseDto> save(@RequestBody UserModel userModel){
+    public ResponseEntity<UserModel> save(@RequestBody UserModel userModel){
+        Debt debt = userModel.getDebt();
+        debt.setBalance(debt.getDebt()-debt.getPay());
+        debt.setUser(userModel);
         return new ResponseEntity<>(userService.save(userModel), HttpStatus.OK);
     }
 

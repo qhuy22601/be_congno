@@ -2,7 +2,9 @@ package com.example.debt_be.service;
 
 import com.example.debt_be.entity.dto.IdDTO;
 import com.example.debt_be.entity.dto.ResponseDto;
+import com.example.debt_be.entity.model.Debt;
 import com.example.debt_be.entity.model.UserModel;
+import com.example.debt_be.repository.DebtRepo;
 import com.example.debt_be.repository.UserRepo;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.ss.usermodel.*;
@@ -29,19 +31,27 @@ public class UserService {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private DebtRepo debtRepo;
+
     public List<UserModel> getAll(){
         return userRepo.findAll();
     }
 
-    public ResponseDto save(UserModel userModel){
-        ResponseDto responseDto = new ResponseDto();
+    public void saveDebt(Debt debt) {
+        debtRepo.save(debt);
+    }
+
+    public UserModel save(UserModel userModel){
+//        ResponseDto responseDto = new ResponseDto();
 //        Optional<UserModel> userModelOpt = userRepo.findById(userModel.getId());
 //        UserModel newUser = userModelOpt.get();
 //        userModel.setLogo(this.storeFile(file));
-        responseDto.setMess("Success");
-        responseDto.setStatus("Success");
-        responseDto.setPayload(userRepo.save(userModel));
-        return responseDto;
+//        responseDto.setMess("Success");
+//        responseDto.setStatus("Success");
+//        responseDto.setPayload(userRepo.save(userModel));
+//        return responseDto;
+        return userRepo.save(userModel);
     }
 
     public ResponseDto getById(IdDTO id){

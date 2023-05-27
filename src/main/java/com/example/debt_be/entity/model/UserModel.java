@@ -1,10 +1,8 @@
 package com.example.debt_be.entity.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,4 +53,8 @@ public class UserModel {
 
     @Nullable
     private String contactEmail;
+
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    private Debt debt;
 }
