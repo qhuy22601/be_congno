@@ -54,9 +54,9 @@ public class UserService {
         return userRepo.save(userModel);
     }
 
-    public ResponseDto getById(IdDTO id){
+    public ResponseDto getById(Integer id){
         ResponseDto responseDto = new ResponseDto();
-        Optional<UserModel> userModelOpt = userRepo.findById(id.getId());
+        Optional<UserModel> userModelOpt = userRepo.findById(id);
         if(userModelOpt.isPresent()){
             responseDto.setMess("Success");
             responseDto.setStatus("Success");

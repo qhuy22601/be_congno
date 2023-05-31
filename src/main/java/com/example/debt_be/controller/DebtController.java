@@ -29,4 +29,10 @@ public class DebtController {
     public ResponseEntity<List<Debt>> getAll(){
         return new ResponseEntity<List<Debt>>(debtService.getAll(),HttpStatus.OK);
     }
+
+    @PostMapping("/save-to-excel/{id}")
+    public ResponseEntity<String> saveToExcelAndDeleteRow(@PathVariable("id") Integer id) {
+        debtService.saveToExcelAndDeleteRow(id);
+        return ResponseEntity.ok("Data saved to Excel and row deleted successfully.");
+    }
 }

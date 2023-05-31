@@ -38,8 +38,8 @@ public class UserController {
         return new ResponseEntity<>(userService.save(userModel), HttpStatus.OK);
     }
 
-    @GetMapping("/getById")
-        public ResponseEntity<ResponseDto> getById(@RequestBody IdDTO id){
+    @GetMapping("/{id}")
+        public ResponseEntity<ResponseDto> getById(@PathVariable("id") Integer id){
             return new ResponseEntity<>(userService.getById(id), HttpStatus.OK);
         }
 
@@ -66,4 +66,5 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
 }
