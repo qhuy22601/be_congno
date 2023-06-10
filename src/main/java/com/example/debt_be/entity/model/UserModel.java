@@ -54,7 +54,7 @@ public class UserModel {
     @Nullable
     private String contactEmail;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
     @JsonIgnore
     private Debt debt;
 }

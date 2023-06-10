@@ -23,7 +23,7 @@ public class Debt {
     private double debt;
     private double pay;
     private double balance;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private UserModel user;
 

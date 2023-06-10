@@ -26,18 +26,42 @@ import java.util.Optional;
 public class DebtService {
     @Autowired
     private DebtRepo debtRepo;
+    @Autowired
+    private UserRepo userRepo;
 
     @Autowired
     private UserService userService;
     public ResponseDto save(Debt debt){
+        boolean exists = userRepo.findAll().stream().anyMatch(userModel -> userModel.getMst().equals(debt.getUser().getMst()));
+        Debt debtSave = new Debt();
+        if(exists) {
+            UserModel userModelOld = userRepo.findAll().stream().filter(userModel -> userModel.getMst().equals( debt.getUser().getMst())).toList().get(0);
+            Optional<Debt> debtOptional = debtRepo.findById(userModelOld.getDebt().getId());
+            Debt debtOld = debtOptional.orElse(null);
+            debtSave.setId(debtOld.getId());
+            debtSave.setDebt(debt.getDebt() + debtOld.getDebt());
+            debtSave.setPay(debt.getPay() + debtOld.getPay());
+            debtSave.setBalance(debtSave.getDebt() - debtSave.getPay());
+            debtSave.setUser(userModelOld);
+            debtSave.getUser().setDebt(debtSave);
+        } else {
+            debtSave.setDebt(debt.getDebt());
+            debtSave.setPay(debt.getPay());
+            System.out.println(debtSave.getDebt());
+            debtSave.setBalance(debtSave.getDebt() - debtSave.getPay());
+            debtSave.setUser(debt.getUser());
+            UserModel userNew = new UserModel();
+            userNew = debtSave.getUser();
+            userNew.setDebt(debtSave);
+            userRepo.saveAndFlush(debt.getUser());
+            debt.getUser().setDebt(debtSave);
+        }
         ResponseDto responseDto = new ResponseDto();
-        UserModel user = userService.save(debt.getUser());
-        debt.setBalance(debt.getDebt()-debt.getPay());
-        debt.setUser(user);
         responseDto.setMess("Success");
         responseDto.setStatus("Success");
-        responseDto.setPayload(debtRepo.save(debt));
+        responseDto.setPayload(debtRepo.saveAndFlush(debtSave));
         return responseDto;
+
     }
 
     public List<Debt> getAll(){
