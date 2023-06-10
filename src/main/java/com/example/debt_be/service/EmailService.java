@@ -41,7 +41,7 @@ public class EmailService {
 
 
 
-    public String sendMailWithAttachment(EmailDetails details, String attachmentPath) {
+    public String sendMailWithAttachment(EmailDetails details) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper;
 
@@ -53,8 +53,8 @@ public class EmailService {
 
             mimeMessageHelper.setText(details.getMsgBody());
 
-            if (attachmentPath != null) {
-                FileSystemResource file = new FileSystemResource(new File(attachmentPath));
+            if (details.getAttachment() != null) {
+                FileSystemResource file = new FileSystemResource(new File(details.getAttachment()));
                 mimeMessageHelper.addAttachment(file.getFilename(), file);
             }
             javaMailSender.send(mimeMessage);
