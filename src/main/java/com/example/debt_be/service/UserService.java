@@ -2,6 +2,7 @@ package com.example.debt_be.service;
 
 import com.example.debt_be.entity.dto.IdDTO;
 import com.example.debt_be.entity.dto.ResponseDto;
+import com.example.debt_be.entity.dto.UserInfo;
 import com.example.debt_be.entity.model.Debt;
 import com.example.debt_be.entity.model.UserModel;
 import com.example.debt_be.repository.DebtRepo;
@@ -54,6 +55,27 @@ public class UserService {
         return userRepo.save(userModel);
     }
 
+    public UserModel changeInfo(UserInfo userModel){
+        Optional<UserModel> userModelOpt = userRepo.findById(userModel.getId());
+        if(userModelOpt.isEmpty()){
+            return null;
+        }else{
+            UserModel newUser = userModelOpt.get();
+            newUser.setMst(userModel.getMst());
+            newUser.setName(userModel.getName());
+            newUser.setAddress(userModel.getAddress());
+            newUser.setCity(userModel.getCity());
+            newUser.setDistrict(userModel.getDistrict());
+            newUser.setWard(userModel.getWard());
+            newUser.setFoundatingDate(userModel.getFoundatingDate());
+            newUser.setContactTitle(userModel.getContactTitle());
+            newUser.setContactEmail(userModel.getContactEmail());
+            newUser.setContactNumber(userModel.getContactNumber());
+            newUser.setContactName(userModel.getContactName());
+            return userRepo.save(newUser);
+        }
+    }
+
     public ResponseDto getById(Integer id){
         ResponseDto responseDto = new ResponseDto();
         Optional<UserModel> userModelOpt = userRepo.findById(id);
@@ -89,7 +111,7 @@ public class UserService {
                 String mst = mstCell.getStringCellValue();
                 String username = row.getCell(1).getStringCellValue();
 
-                UserModel existingUser = userRepo.findByMst(mst);
+                List<UserModel> existingUser = userRepo.findByMst(mst);
                 if (existingUser != null) {
                     // Nếu người dùng đã tồn tại, bỏ qua và tiếp tục với hàng tiếp theo
                     continue;

@@ -31,41 +31,65 @@ public class DebtService {
 
     @Autowired
     private UserService userService;
+//    public ResponseDto save(Debt debt){
+//        boolean exists = userRepo.findAll().stream().anyMatch(userModel -> userModel.getMst().equals(debt.getUser().getMst()));
+//        Debt debtSave = new Debt();
+//        if(exists) {
+//            UserModel userModelOld = userRepo.findAll().stream().filter(userModel -> userModel.getMst().equals( debt.getUser().getMst())).toList().get(0);
+//            Optional<Debt> debtOptional = debtRepo.findById(userModelOld.getDebt().getId());
+//            Debt debtOld = debtOptional.orElse(null);
+//            debtSave.setId(debtOld.getId());
+//            debtSave.setDebt(debt.getDebt() + debtOld.getDebt());
+//            debtSave.setPay(debt.getPay() + debtOld.getPay());
+//            debtSave.setBalance(debtSave.getDebt() - debtSave.getPay());
+//            debtSave.setUser(userModelOld);
+//            debtSave.getUser().setDebt(debtSave);
+//        } else {
+//            debtSave.setNote(debt.getNote());
+//            debtSave.setDebt(debt.getDebt());
+//            debtSave.setPay(debt.getPay());
+//            System.out.println(debtSave.getDebt());
+//            debtSave.setBalance(debtSave.getDebt() - debtSave.getPay());
+//            debtSave.setUser(debt.getUser());
+//            UserModel userNew = new UserModel();
+//            userNew = debtSave.getUser();
+//            userNew.setDebt(debtSave);
+//            userRepo.saveAndFlush(debt.getUser());
+//            debt.getUser().setDebt(debtSave);
+//        }
+//        ResponseDto responseDto = new ResponseDto();
+//        responseDto.setMess("Success");
+//        responseDto.setStatus("Success");
+//        responseDto.setPayload(debtRepo.saveAndFlush(debtSave));
+//        return responseDto;
+//
+//    }
+
+
     public ResponseDto save(Debt debt){
-        boolean exists = userRepo.findAll().stream().anyMatch(userModel -> userModel.getMst().equals(debt.getUser().getMst()));
-        Debt debtSave = new Debt();
-        if(exists) {
-            UserModel userModelOld = userRepo.findAll().stream().filter(userModel -> userModel.getMst().equals( debt.getUser().getMst())).toList().get(0);
-            Optional<Debt> debtOptional = debtRepo.findById(userModelOld.getDebt().getId());
-            Debt debtOld = debtOptional.orElse(null);
-            debtSave.setId(debtOld.getId());
-            debtSave.setDebt(debt.getDebt() + debtOld.getDebt());
-            debtSave.setPay(debt.getPay() + debtOld.getPay());
-            debtSave.setBalance(debtSave.getDebt() - debtSave.getPay());
-            debtSave.setUser(userModelOld);
-            debtSave.getUser().setDebt(debtSave);
-        } else {
-            debtSave.setDebt(debt.getDebt());
-            debtSave.setPay(debt.getPay());
-            System.out.println(debtSave.getDebt());
-            debtSave.setBalance(debtSave.getDebt() - debtSave.getPay());
-            debtSave.setUser(debt.getUser());
-            UserModel userNew = new UserModel();
-            userNew = debtSave.getUser();
-            userNew.setDebt(debtSave);
-            userRepo.saveAndFlush(debt.getUser());
-            debt.getUser().setDebt(debtSave);
-        }
         ResponseDto responseDto = new ResponseDto();
+        UserModel existingUser = userRepo.findUserModelByMst(debt.getUser().getMst());
+
+        if (existingUser != null) {
+            debt.setUser(existingUser);
+        } else {
+            UserModel newUser = userService.save(debt.getUser());
+            debt.setUser(newUser);
+        }
+        debt.setNote(debt.getNote());
+        debt.setBalance(debt.getDebt()-debt.getPay());
         responseDto.setMess("Success");
         responseDto.setStatus("Success");
-        responseDto.setPayload(debtRepo.saveAndFlush(debtSave));
+        responseDto.setPayload(debtRepo.save(debt));
         return responseDto;
-
     }
 
     public List<Debt> getAll(){
         return debtRepo.findAll();
+    }
+
+    public List<Debt> getByUserId(Integer id){
+        return debtRepo.findByUserId(id);
     }
 
     public void saveToExcelAndDeleteRow(Integer id) {

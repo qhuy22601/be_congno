@@ -10,6 +10,8 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepo  extends JpaRepository<UserModel, Integer> {
-    UserModel findByMst (String mst);
+    List<UserModel> findByMst (String mst);
     Optional<List<UserModel>> findByMstContainingOrNameContaining(@Nullable String mst, String name);
+
+    UserModel findUserModelByMst(String mst);
 }

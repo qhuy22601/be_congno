@@ -21,14 +21,11 @@ public class Debt {
 
     private LocalDate date;
     private double debt;
+    private String note;
     private double pay;
     private double balance;
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private UserModel user;
 
-//    @PostLoad
-//    public void calculateBalance() {
-//        balance = debt - pay;
-//    }
 }
