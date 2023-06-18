@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
@@ -91,9 +92,10 @@ public class UserService {
         return responseDto;
     }
 
+    @Transactional
     public void importUsersFromExcel(MultipartFile file) {
         try {
-            Workbook workbook = WorkbookFactory.create((file.getInputStream()));
+            Workbook workbook = WorkbookFactory.create(file.getInputStream());
             Sheet sheet = workbook.getSheetAt(0);
 
             List<UserModel> users = new ArrayList<>();
@@ -109,10 +111,16 @@ public class UserService {
                     continue;
                 }
                 String mst = mstCell.getStringCellValue();
-                String username = row.getCell(1).getStringCellValue();
+
+                Cell usernameCell = row.getCell(1);
+                if (usernameCell == null || usernameCell.getCellType() != CellType.STRING || usernameCell.getStringCellValue().isEmpty()) {
+                    // Bỏ qua nếu trường username bị trống
+                    continue;
+                }
+                String username = usernameCell.getStringCellValue();
 
                 List<UserModel> existingUser = userRepo.findByMst(mst);
-                if (existingUser != null) {
+                if (!existingUser.isEmpty()) {
                     // Nếu người dùng đã tồn tại, bỏ qua và tiếp tục với hàng tiếp theo
                     continue;
                 }
@@ -123,14 +131,11 @@ public class UserService {
                 user.setMst(mst);
                 userRepo.save(user);
             }
-
-
         } catch (IOException | EncryptedDocumentException e) {
             // Xử lý exception khi đọc và xử lý tệp Excel
             e.printStackTrace();
         }
     }
-
     public ResponseDto findMstName(String mst, String name){
         ResponseDto responseDto = new ResponseDto();
         Optional<List<UserModel>> listOpt = userRepo.findByMstContainingOrNameContaining(mst,name);
